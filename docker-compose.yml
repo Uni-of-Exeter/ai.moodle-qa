@@ -19,7 +19,7 @@ services:
       retries: 5
 
   moodle:
-    image: php:8.1-apache
+    image: php:8.5-apache
     container_name: moodle-app
     depends_on:
       db:

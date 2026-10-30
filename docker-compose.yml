@@ -1,0 +1,76 @@
+services:
+  db:
+    image: mariadb:10.11
+    container_name: moodle-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${MOODLE_DB_NAME:-moodle}
+      MYSQL_USER: ${MOODLE_DB_USER:-moodle}
+      MYSQL_PASSWORD: ${MOODLE_DB_PASSWORD:-moodle_password}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - moodle-net
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb-file-format=Barracuda --innodb-file-per-table=1 --innodb-large-prefix=1
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  moodle:
+    image: php:8.1-apache
+    container_name: moodle-app
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      - MOODLE_DB_HOST=db
+      - MOODLE_DB_NAME=${MOODLE_DB_NAME:-moodle}
+      - MOODLE_DB_USER=${MOODLE_DB_USER:-moodle}
+      - MOODLE_DB_PASS=${MOODLE_DB_PASSWORD:-moodle_password}
+    volumes:
+      - moodle_code:/var/www/html
+      - moodle_data:/var/moodledata
+    networks:
+      - moodle-net
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        # Install required PHP extensions
+        apt-get update && apt-get install -y \
+          libpng-dev libjpeg-dev libfreetype6-dev \
+          libzip-dev libicu-dev libxml2-dev \
+          git curl unzip && \
+        docker-php-ext-configure gd --with-freetype --with-jpeg && \
+        docker-php-ext-install -j$$(nproc) \
+          gd zip intl mysqli pdo pdo_mysql opcache soap && \
+
+        # Download and install Moodle if not present
+        if [ ! -f /var/www/html/version.php ]; then
+          echo "Downloading Moodle 4.3..."
+          cd /tmp
+          curl -L https://download.moodle.org/download.php/direct/stable403/moodle-4.3.3.tgz -o moodle.tgz
+          tar -xzf moodle.tgz
+          cp -r moodle/* /var/www/html/
+          rm -rf moodle moodle.tgz
+
+          mkdir -p /var/moodledata
+          chown -R www-data:www-data /var/www/html /var/moodledata
+          chmod -R 755 /var/www/html
+          chmod -R 777 /var/moodledata
+        fi
+
+        # Start Apache
+        apache2-foreground
+
+volumes:
+  db_data:
+  moodle_code:
+  moodle_data:
+
+networks:
+  moodle-net:
+    driver: bridge

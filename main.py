@@ -45,8 +45,8 @@ from src.engine import AuditEngine
 # ─────────────────────────────────────────────
 # CONFIGURATION — update these for your instance
 # ─────────────────────────────────────────────
-MOODLE_URL = "https://your-moodle-site.ac.uk"
-TOKEN = "your_webservice_token_here"
+MOODLE_URL = "http://localhost:8080"
+TOKEN = "b5f2d7d6565e354ec6ac05cbb350f81c"
 
 moodle_config = MoodleConfig(base_url=MOODLE_URL, token=TOKEN)
 

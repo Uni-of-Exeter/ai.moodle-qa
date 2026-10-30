@@ -2,6 +2,8 @@
 
 A clean-architecture Python tool that programmatically audits **every course** on a Moodle instance across 8 quality assurance dimensions. Designed for learning technologists, system administrators, and QA teams who need to maintain content standards at scale.
 
+> **🚀 New User?** See **[GETTING_STARTED.md](GETTING_STARTED.md)** for complete setup from fresh clone
+
 ---
 
 ## Features
@@ -33,12 +35,31 @@ A clean-architecture Python tool that programmatically audits **every course** o
 
 ---
 
-## Prerequisites
+## Quick Start
 
-- **Python 3.10+** (uses `frozenset` type hints and `match` syntax)
+**Fresh clone?** → **[GETTING_STARTED.md](GETTING_STARTED.md)** (5-minute setup)
+
+### For Local Testing
+
+```bash
+# 1. Start Moodle
+./start-moodle.sh
+
+# 2. Setup Web Services (see GETTING_STARTED.md)
+# 3. Run automated setup
+./setup-complete-dev-env.sh YOUR_TOKEN
+
+# 4. Run QA tool
+python main.py --all
+```
+
+See **[GETTING_STARTED.md](GETTING_STARTED.md)** for complete instructions.
+
+### For Production Moodle
+
+- **Python 3.10+** required
 - **Moodle 3.1+** with Web Services enabled
-- A Moodle **API token** with access to `core_course_get_courses` and `core_course_get_contents`
-- Network access from the machine running the script to your Moodle instance
+- **API token** with `core_course_get_courses` and `core_course_get_contents` access
 
 ---
 
@@ -84,6 +105,18 @@ audit_config = AuditConfig(
 ---
 
 ## Usage
+
+### Populate Test Data (Optional)
+
+To test the QA tool, populate Moodle with test courses containing intentional issues:
+
+```bash
+# After setting up Web Services and generating a token
+python populate_test_data.py --token YOUR_TOKEN
+
+# Creates 8 test courses with various QA issues
+# Safe to run multiple times (idempotent)
+```
 
 ### Basic Usage
 

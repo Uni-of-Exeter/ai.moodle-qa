@@ -56,6 +56,11 @@ moodle_qa_reports/
 main.local.py
 config.local.py
 
+# Docker volumes (if using local bind mounts)
+moodle_data/
+moodledata_data/
+mariadb_data/
+
 # Test coverage
 .coverage
 htmlcov/

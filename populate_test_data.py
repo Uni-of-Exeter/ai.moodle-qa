@@ -117,7 +117,7 @@ class MoodleTestDataPopulator:
             print(f"      ⚠ Could not add content (course created but empty): {e}")
 
     def create_broken_links_course(self, category_id: int):
-        """Course 1: Broken Links Test."""
+        """Course 1: Broken Links Test - Mix of working and broken links."""
         print("\n📝 Creating Course 1: Broken Links Test")
 
         course_id = self.create_course(
@@ -126,32 +126,44 @@ class MoodleTestDataPopulator:
             category_id
         )
 
-        # Content with various broken links
+        # Content with BOTH working and broken links
         content = """
-        <h2>Test Page with Broken Links</h2>
-        <p>This page contains intentionally broken links for testing.</p>
+        <h2>Link Testing Page</h2>
+        <p>This page contains both working and broken links to test detection.</p>
 
-        <h3>External Links</h3>
+        <h3>✅ Working Links (Should Pass)</h3>
         <ul>
-            <li><a href="https://example.com/does-not-exist">Broken link 1 (404)</a></li>
-            <li><a href="http://broken-domain-12345.com">Broken domain</a></li>
+            <li><a href="https://www.moodle.org">Moodle.org</a> - Valid link</li>
+            <li><a href="https://www.google.com">Google</a> - Valid link</li>
+            <li><a href="https://httpstat.us/200">HTTP 200 OK</a> - Valid status</li>
+        </ul>
+
+        <h3>❌ Broken Links (Should Fail)</h3>
+        <ul>
+            <li><a href="https://example.com/does-not-exist-404">Broken link (404)</a></li>
+            <li><a href="http://this-domain-definitely-does-not-exist-12345.com">Broken domain</a></li>
             <li><a href="https://httpstat.us/500">Server error link (500)</a></li>
         </ul>
 
-        <h3>Broken Images</h3>
-        <img src="https://example.com/missing-image.jpg" alt="This image is missing">
+        <h3>✅ Working Images (Should Pass)</h3>
+        <img src="https://via.placeholder.com/150" alt="Valid placeholder image">
+
+        <h3>❌ Broken Images (Should Fail)</h3>
+        <img src="https://example.com/missing-image-404.jpg" alt="This image is missing">
         <img src="http://broken-domain.example/logo.png" alt="Another broken image">
 
-        <h3>Broken Media</h3>
+        <h3>❌ Broken Media (Should Fail)</h3>
         <video src="https://example.com/missing-video.mp4" controls></video>
-        <iframe src="https://example.com/missing-embed"></iframe>
+
+        <p><strong>Expected Results:</strong> 3 working links pass, 5+ broken links/images/media fail</p>
         """
 
-        self.add_page_with_content(course_id, 'Broken Links Test Page', content)
+        self.add_page_with_content(course_id, 'Mixed Link Test Page', content)
         print(f"   ✓ Created course (ID: {course_id})")
+        print(f"      Expected: 3 passing links, 5+ failing links")
 
     def create_legacy_files_course(self, category_id: int):
-        """Course 2: Legacy File Types Test."""
+        """Course 2: Legacy File Types Test - Mix of modern and legacy formats."""
         print("\n📝 Creating Course 2: Legacy File Types Test")
 
         course_id = self.create_course(
@@ -160,34 +172,43 @@ class MoodleTestDataPopulator:
             category_id
         )
 
-        # Content referencing legacy file types
+        # Content with BOTH modern and legacy file types
         content = """
-        <h2>Legacy File Formats</h2>
-        <p>This course references legacy media formats that need updating.</p>
+        <h2>File Format Testing</h2>
+        <p>This course has both modern and legacy media formats.</p>
 
-        <h3>Flash Content</h3>
+        <h3>✅ Modern Formats (Should Pass)</h3>
+        <ul>
+            <li><a href="lecture.mp4">MP4 video file</a> - Modern format ✓</li>
+            <li><a href="presentation.pdf">PDF document</a> - Standard format ✓</li>
+            <li><a href="slides.pptx">PowerPoint (PPTX)</a> - Modern format ✓</li>
+            <li><a href="document.docx">Word document (DOCX)</a> - Modern format ✓</li>
+        </ul>
+
+        <h3>❌ Legacy Formats (Should Fail)</h3>
+        <p><strong>Flash Content:</strong></p>
         <object data="animation.swf" type="application/x-shockwave-flash"></object>
         <embed src="game.swf" type="application/x-shockwave-flash"></embed>
 
-        <h3>Legacy Video Formats</h3>
-        <p>Old video files:</p>
+        <p><strong>Legacy Video Formats:</strong></p>
         <ul>
-            <li><a href="training_video.flv">FLV video file</a></li>
-            <li><a href="presentation.wmv">WMV video file</a></li>
-            <li><a href="demo.avi">AVI video file</a></li>
-            <li><a href="legacy_recording.rm">RealMedia file</a></li>
+            <li><a href="training_video.flv">FLV video file</a> - Legacy ❌</li>
+            <li><a href="presentation.wmv">WMV video file</a> - Legacy ❌</li>
+            <li><a href="demo.avi">AVI video file</a> - Legacy ❌</li>
+            <li><a href="legacy_recording.rm">RealMedia file</a> - Legacy ❌</li>
         </ul>
 
-        <h3>Other Legacy Formats</h3>
         <video src="old_lecture.flv" controls></video>
-        <p>Download: <a href="archive.wmv">Windows Media Video</a></p>
+
+        <p><strong>Expected Results:</strong> 4 modern formats pass, 6 legacy formats fail</p>
         """
 
-        self.add_page_with_content(course_id, 'Legacy Formats Page', content)
+        self.add_page_with_content(course_id, 'Mixed Format Page', content)
         print(f"   ✓ Created course (ID: {course_id})")
+        print(f"      Expected: 4 modern formats pass, 6 legacy formats fail")
 
     def create_large_files_course(self, category_id: int):
-        """Course 3: Large Files Test."""
+        """Course 3: Large Files Test - Mix of reasonable and large files."""
         print("\n📝 Creating Course 3: Large Files Test")
 
         course_id = self.create_course(
@@ -197,27 +218,38 @@ class MoodleTestDataPopulator:
         )
 
         content = """
-        <h2>Large File References</h2>
-        <p>This course simulates large file references.</p>
+        <h2>File Size Testing</h2>
+        <p>This course has files of varying sizes to test threshold detection.</p>
 
-        <p><strong>Note:</strong> These are simulated references - the actual files don't exist,
-        but the QA tool should flag them based on the names suggesting large sizes.</p>
-
+        <h3>✅ Reasonable File Sizes (Should Pass)</h3>
+        <p>These files are under the 50MB threshold:</p>
         <ul>
-            <li><a href="full_course_video_1080p_uncompressed.mp4">Course Video (120MB)</a></li>
-            <li><a href="dataset_archive_full.zip">Large Dataset (250MB)</a></li>
-            <li><a href="high_res_images_pack.zip">High Resolution Images (85MB)</a></li>
-            <li><a href="software_installer_v2.exe">Software Package (150MB)</a></li>
+            <li><a href="lecture_slides.pdf">Lecture Slides (2.5MB)</a></li>
+            <li><a href="tutorial_video.mp4">Tutorial Video (15MB)</a></li>
+            <li><a href="worksheet.docx">Worksheet (1.2MB)</a></li>
+            <li><a href="sample_data.csv">Sample Data (8MB)</a></li>
         </ul>
 
-        <p>The file names indicate these would exceed the 50MB threshold.</p>
+        <h3>❌ Large Files (Should Fail)</h3>
+        <p>These files exceed the 50MB threshold:</p>
+        <ul>
+            <li><a href="full_course_video_1080p_uncompressed.mp4">4K Course Video (120MB)</a></li>
+            <li><a href="dataset_archive_full.zip">Complete Dataset (250MB)</a></li>
+            <li><a href="high_res_images_pack.zip">High-Res Image Pack (85MB)</a></li>
+            <li><a href="software_installer_v2.exe">Software Package (150MB)</a></li>
+            <li><a href="research_data_backup.tar.gz">Research Backup (180MB)</a></li>
+        </ul>
+
+        <p><strong>Note:</strong> File sizes are simulated references for testing.</p>
+        <p><strong>Expected Results:</strong> 4 reasonable files pass, 5 large files fail</p>
         """
 
-        self.add_page_with_content(course_id, 'Large Files Page', content)
+        self.add_page_with_content(course_id, 'Mixed File Size Page', content)
         print(f"   ✓ Created course (ID: {course_id})")
+        print(f"      Expected: 4 small files pass, 5 large files fail")
 
     def create_accessibility_course(self, category_id: int):
-        """Course 4: Accessibility Issues Test."""
+        """Course 4: Accessibility Issues Test - Mix of good and bad accessibility."""
         print("\n📝 Creating Course 4: Accessibility Issues Test")
 
         course_id = self.create_course(
@@ -226,20 +258,46 @@ class MoodleTestDataPopulator:
             category_id
         )
 
-        # Content with accessibility violations
+        # Content with BOTH good and bad accessibility
         content = """
-        <h2>Accessibility Issues Page</h2>
+        <h2>Accessibility Testing Page</h2>
 
-        <h3>Images Without Alt Text</h3>
-        <img src="diagram.png">
-        <img src="chart.jpg">
-        <img src="infographic.png" alt="">
+        <h3>✅ Images With Alt Text (Should Pass)</h3>
+        <img src="diagram.png" alt="System architecture diagram showing database and web server">
+        <img src="chart.jpg" alt="Bar chart comparing Q1 vs Q2 sales figures">
 
-        <h3>Empty Links</h3>
-        <p>Click <a href="next.html"></a> to continue.</p>
-        <p>More info: <a href="info.html">   </a></p>
+        <h3>❌ Images Without Alt Text (Should Fail)</h3>
+        <img src="infographic.png">
+        <img src="missing-alt.jpg">
+        <img src="no-description.png" alt="">
 
-        <h3>Tables Without Headers</h3>
+        <h3>✅ Good Links (Should Pass)</h3>
+        <p>Click <a href="next.html">here to continue</a> to the next page.</p>
+        <p>More info: <a href="info.html">detailed information page</a></p>
+
+        <h3>❌ Empty Links (Should Fail)</h3>
+        <p>Click <a href="empty.html"></a> here.</p>
+        <p>More: <a href="whitespace.html">   </a></p>
+
+        <h3>✅ Table With Headers (Should Pass)</h3>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Score</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Alice</td>
+                    <td>95</td>
+                    <td>A</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>❌ Table Without Headers (Should Fail)</h3>
         <table border="1">
             <tr>
                 <td>Name</td>
@@ -251,27 +309,26 @@ class MoodleTestDataPopulator:
                 <td>85</td>
                 <td>B</td>
             </tr>
-            <tr>
-                <td>Jane</td>
-                <td>92</td>
-                <td>A</td>
-            </tr>
         </table>
 
-        <h3>Skipped Heading Levels</h3>
+        <h3>✅ Proper Heading Hierarchy (Should Pass)</h3>
+        <h2>Main Section</h2>
+        <h3>Subsection</h3>
+        <h4>Detail Level</h4>
+
+        <h3>❌ Skipped Heading Levels (Should Fail)</h3>
         <h2>Section Title</h2>
         <h5>Subsection (skipped h3 and h4)</h5>
 
-        <h3>Videos Without Captions</h3>
-        <video src="lecture_video.mp4" controls></video>
-        <p>Note: No .vtt or .srt caption file available</p>
+        <p><strong>Expected Results:</strong> ~7 accessibility passes, ~7 failures</p>
         """
 
-        self.add_page_with_content(course_id, 'Accessibility Issues', content)
+        self.add_page_with_content(course_id, 'Mixed Accessibility Page', content)
         print(f"   ✓ Created course (ID: {course_id})")
+        print(f"      Expected: ~7 passes, ~7 failures")
 
     def create_malicious_code_course(self, category_id: int):
-        """Course 5: Malicious Code Detection Test."""
+        """Course 5: Malicious Code Detection Test - Mix of safe and suspicious code."""
         print("\n📝 Creating Course 5: Malicious Code Test")
 
         course_id = self.create_course(
@@ -280,38 +337,52 @@ class MoodleTestDataPopulator:
             category_id
         )
 
-        # Content with suspicious patterns (escaped for safety)
+        # Content with BOTH safe and suspicious patterns
         content = """
-        <h2>Security Test Page</h2>
-        <p><strong>Note:</strong> This page contains intentionally suspicious code patterns for testing.</p>
+        <h2>Security Testing Page</h2>
+        <p><strong>Note:</strong> This page tests code pattern detection.</p>
 
-        <h3>Inline Scripts</h3>
-        <p>This paragraph has an inline script:
-        &lt;script&gt;alert('test');&lt;/script&gt;
-        </p>
+        <h3>✅ Safe Links (Should Pass)</h3>
+        <a href="https://www.moodle.org">Moodle website</a>
+        <a href="/course/view.php?id=1">Internal course link</a>
+        <a href="mailto:admin@example.com">Email link</a>
 
-        <h3>JavaScript URIs</h3>
+        <h3>❌ JavaScript URIs (Should Fail)</h3>
         <a href="javascript:void(0)">JavaScript link</a>
         <a href="javascript:alert('click')">Another JS link</a>
 
-        <h3>Inline Event Handlers</h3>
+        <h3>✅ Safe Event Handling (Should Pass)</h3>
+        <button>Safe Button</button>
+        <div class="content">Safe div with class</div>
+
+        <h3>❌ Inline Event Handlers (Should Fail)</h3>
         <button onclick="alert('clicked')">Click Me</button>
         <div onload="runCode()">Auto-loading div</div>
         <img src="test.jpg" onerror="handleError()">
 
-        <h3>Suspicious JavaScript</h3>
-        <p>Code snippet: <code>eval(userInput)</code></p>
-        <p>Code snippet: <code>document.cookie</code></p>
+        <h3>✅ Safe Code Examples (Should Pass)</h3>
+        <p>Example: <code>function calculate() { return x + y; }</code></p>
+        <p>Example: <code>const data = fetchData();</code></p>
 
-        <h3>Embedded iframe</h3>
+        <h3>❌ Suspicious Code (Should Fail)</h3>
+        <p>Dangerous: <code>eval(userInput)</code></p>
+        <p>Dangerous: <code>document.cookie</code></p>
+
+        <h3>✅ Embedded Video (Should Pass)</h3>
+        <video src="lecture.mp4" controls></video>
+
+        <h3>❌ External iframe (Should Fail)</h3>
         <iframe src="https://external-site.com/embed"></iframe>
+
+        <p><strong>Expected Results:</strong> ~5 safe patterns pass, ~6 suspicious patterns fail</p>
         """
 
-        self.add_page_with_content(course_id, 'Security Test Page', content)
+        self.add_page_with_content(course_id, 'Mixed Security Test Page', content)
         print(f"   ✓ Created course (ID: {course_id})")
+        print(f"      Expected: ~5 safe passes, ~6 suspicious fails")
 
     def create_mobile_issues_course(self, category_id: int):
-        """Course 6: Mobile Compatibility Issues Test."""
+        """Course 6: Mobile Compatibility Issues Test - Mix of responsive and fixed content."""
         print("\n📝 Creating Course 6: Mobile Compatibility Test")
 
         course_id = self.create_course(
@@ -321,16 +392,26 @@ class MoodleTestDataPopulator:
         )
 
         content = """
-        <h2>Mobile Compatibility Issues</h2>
+        <h2>Mobile Compatibility Testing</h2>
 
-        <h3>Flash Content (Not Mobile-Friendly)</h3>
+        <h3>✅ Mobile-Friendly Content (Should Pass)</h3>
+        <p>Responsive text content that adapts to screen size.</p>
+        <div style="max-width: 100%; padding: 10px;">
+            <p>This div uses max-width: 100% - mobile friendly!</p>
+        </div>
+
+        <h3>✅ Responsive Media (Should Pass)</h3>
+        <video src="lecture.mp4" controls style="max-width: 100%;"></video>
+        <img src="diagram.jpg" alt="Diagram" style="max-width: 100%; height: auto;">
+
+        <h3>❌ Flash Content (Should Fail)</h3>
         <object data="interactive.swf" type="application/x-shockwave-flash" width="800" height="600">
             <param name="movie" value="interactive.swf">
         </object>
 
-        <h3>Fixed-Width Elements (Not Responsive)</h3>
+        <h3>❌ Fixed-Width Elements (Should Fail)</h3>
         <div style="width: 1200px; height: 800px; background: #eee;">
-            <p>This div has a fixed width of 1200px - won't work well on mobile!</p>
+            <p>This div has a fixed width of 1200px - not responsive!</p>
         </div>
 
         <table width="1000" border="1">
@@ -339,22 +420,30 @@ class MoodleTestDataPopulator:
             </tr>
         </table>
 
-        <h3>Legacy Media Formats</h3>
-        <p>These formats have poor mobile support:</p>
+        <h3>✅ Modern Formats (Should Pass)</h3>
+        <ul>
+            <li><a href="video.mp4">MP4 video</a> - mobile compatible</li>
+            <li><a href="presentation.pdf">PDF document</a> - mobile compatible</li>
+        </ul>
+
+        <h3>❌ Legacy Formats (Should Fail)</h3>
         <ul>
             <li><a href="video.flv">Flash Video (FLV)</a></li>
             <li><a href="presentation.wmv">Windows Media (WMV)</a></li>
         </ul>
 
-        <h3>Large Images with Fixed Dimensions</h3>
+        <h3>❌ Fixed Dimension Images (Should Fail)</h3>
         <img src="banner.jpg" width="2000" height="1000" alt="Very wide banner">
+
+        <p><strong>Expected Results:</strong> ~4 mobile-friendly passes, ~5 issues fail</p>
         """
 
-        self.add_page_with_content(course_id, 'Mobile Issues Page', content)
+        self.add_page_with_content(course_id, 'Mixed Mobile Test Page', content)
         print(f"   ✓ Created course (ID: {course_id})")
+        print(f"      Expected: ~4 responsive passes, ~5 mobile issues fail")
 
     def create_content_depth_course(self, category_id: int):
-        """Course 7: Deep Content Nesting Test."""
+        """Course 7: Deep Content Nesting Test - Mix of shallow and deep nesting."""
         print("\n📝 Creating Course 7: Content Depth Test")
 
         course_id = self.create_course(
@@ -363,23 +452,52 @@ class MoodleTestDataPopulator:
             category_id
         )
 
-        # Deeply nested HTML structure
+        # Mix of reasonable and deeply nested structures
         content = """
-        <h2>Deeply Nested Content Structure</h2>
-        <p>This page tests content depth detection.</p>
+        <h2>Content Depth Testing</h2>
+        <p>This page tests content depth detection with mixed nesting levels.</p>
 
+        <h3>✅ Reasonable Nesting (Should Pass)</h3>
+        <div class="section">
+            <h4>Section Title</h4>
+            <div class="content">
+                <p>Content at level 2 - acceptable depth</p>
+                <ul>
+                    <li>Item 1</li>
+                    <li>Item 2</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>✅ Simple Lists (Should Pass)</h3>
+        <ul>
+            <li>Level 1
+                <ul>
+                    <li>Level 2
+                        <ul>
+                            <li>Level 3 (reasonable depth)</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <h3>❌ Excessive Nesting (Should Fail)</h3>
         <div class="level-1">
-            <h3>Level 1</h3>
+            <h4>Level 1</h4>
             <div class="level-2">
-                <h4>Level 2</h4>
+                <h5>Level 2</h5>
                 <div class="level-3">
-                    <h5>Level 3</h5>
+                    <h6>Level 3</h6>
                     <div class="level-4">
-                        <h6>Level 4</h6>
+                        <p>Level 4</p>
                         <div class="level-5">
-                            <p>Level 5 content (exceeds typical depth threshold)</p>
+                            <p>Level 5 (exceeds threshold)</p>
                             <div class="level-6">
                                 <p>Level 6 - very deeply nested!</p>
+                                <div class="level-7">
+                                    <p>Level 7 - excessive!</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -387,8 +505,7 @@ class MoodleTestDataPopulator:
             </div>
         </div>
 
-        <h3>Simulated SCORM/Book Module</h3>
-        <p>Reference to deeply nested learning object:</p>
+        <h3>❌ Deeply Nested Lists (Should Fail)</h3>
         <ul>
             <li>Module 1
                 <ul>
@@ -398,7 +515,11 @@ class MoodleTestDataPopulator:
                                 <ul>
                                     <li>Subsection 1.1.1
                                         <ul>
-                                            <li>Content 1.1.1.1 (5 levels deep)</li>
+                                            <li>Sub-subsection 1.1.1.1
+                                                <ul>
+                                                    <li>Content (6 levels - too deep!)</li>
+                                                </ul>
+                                            </li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -408,13 +529,16 @@ class MoodleTestDataPopulator:
                 </ul>
             </li>
         </ul>
+
+        <p><strong>Expected Results:</strong> ~2 shallow structures pass, ~2 deep structures fail</p>
         """
 
-        self.add_page_with_content(course_id, 'Deep Nesting Page', content)
+        self.add_page_with_content(course_id, 'Mixed Depth Page', content)
         print(f"   ✓ Created course (ID: {course_id})")
+        print(f"      Expected: ~2 shallow passes, ~2 deep nesting fails")
 
     def create_comprehensive_course(self, category_id: int):
-        """Course 8: Comprehensive test with multiple issues."""
+        """Course 8: Comprehensive test with mixed good and bad examples across all dimensions."""
         print("\n📝 Creating Course 8: Comprehensive Test")
 
         course_id = self.create_course(
@@ -425,29 +549,46 @@ class MoodleTestDataPopulator:
 
         content = """
         <h2>Comprehensive QA Test Page</h2>
-        <p>This page combines multiple QA issues.</p>
+        <p>This page combines multiple QA checks with both passing and failing examples.</p>
 
-        <h3>Broken Links</h3>
-        <a href="https://example.com/404">Broken link</a>
+        <h3>Links</h3>
+        <p>✅ <a href="https://www.moodle.org">Working link</a></p>
+        <p>❌ <a href="https://example.com/404">Broken link</a></p>
 
-        <h3>Legacy Format</h3>
-        <object data="old-content.swf"></object>
+        <h3>File Formats</h3>
+        <p>✅ <a href="document.pdf">Modern PDF</a></p>
+        <p>❌ <object data="old-content.swf"></object></p>
 
-        <h3>Accessibility Issue</h3>
-        <img src="chart.png">
+        <h3>File Sizes</h3>
+        <p>✅ <a href="presentation.pdf">Small file (5MB)</a></p>
+        <p>❌ <a href="huge_archive_500mb.zip">Large download (500MB)</a></p>
 
-        <h3>Mobile Issue</h3>
-        <div style="width: 1500px;">Not responsive</div>
+        <h3>Accessibility</h3>
+        <p>✅ <img src="diagram.jpg" alt="System diagram"></p>
+        <p>❌ <img src="chart.png"></p>
 
-        <h3>Security Issue</h3>
-        <a href="javascript:void(0)">JS link</a>
+        <h3>Mobile Compatibility</h3>
+        <p>✅ <video src="lecture.mp4" controls style="max-width:100%;"></video></p>
+        <p>❌ <div style="width: 1500px;">Not responsive</div></p>
 
-        <h3>Large File</h3>
-        <a href="huge_archive_500mb.zip">Download (500MB)</a>
+        <h3>Security</h3>
+        <p>✅ <a href="/course/view.php?id=1">Safe link</a></p>
+        <p>❌ <a href="javascript:void(0)">JS link</a></p>
+
+        <h3>Content Depth</h3>
+        <div class="ok">
+            <p>✅ Shallow nesting (OK)</p>
+        </div>
+        <div><div><div><div><div>
+            <p>❌ Deep nesting (Too deep)</p>
+        </div></div></div></div></div>
+
+        <p><strong>Expected Results:</strong> ~7 checks with mixed pass/fail results</p>
         """
 
-        self.add_page_with_content(course_id, 'Comprehensive Test', content)
+        self.add_page_with_content(course_id, 'Comprehensive Mixed Test', content)
         print(f"   ✓ Created course (ID: {course_id})")
+        print(f"      Expected: Multiple checks, both passes and failures")
 
     def populate_all(self):
         """Create all test courses."""

@@ -71,6 +71,31 @@ class AuditEngine:
 
         try:
             sections = self._client.get_course_contents(course_id)
+
+            # Also include course summary as a virtual section/module if it has content
+            # This allows checking links/HTML in course descriptions
+            course_summary = course.get("summary", "")
+            if course_summary and course_summary.strip():
+                summary_module = {
+                    "id": 0,
+                    "name": "Course Summary",
+                    "modname": "label",  # Treat as label for HTML content
+                    "description": course_summary,  # Use 'description' field (checks look for this)
+                    "descriptionformat": course.get("summaryformat", 1),
+                }
+                # Add as first section/module
+                if sections:
+                    if "modules" not in sections[0]:
+                        sections[0]["modules"] = []
+                    sections[0]["modules"].insert(0, summary_module)
+                else:
+                    # Create a virtual section if course has no sections
+                    sections = [{
+                        "id": 0,
+                        "name": "Course Information",
+                        "modules": [summary_module]
+                    }]
+
         except Exception as exc:
             result.skipped = True
             result.error = str(exc)

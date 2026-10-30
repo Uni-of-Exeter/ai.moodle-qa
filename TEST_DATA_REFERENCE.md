@@ -9,31 +9,35 @@ The `populate_test_data.py` script creates 8 test courses, each designed to trig
 ### 1. QATEST-LINKS - Broken Links Test
 **Triggers:** Broken Links Check
 
-**Issues:**
-- 3 broken external links (404, broken domain, 500 error)
-- 2 broken image references
-- 1 broken video source
-- 1 broken iframe embed
+**Content:**
+- ✅ 3 working links (moodle.org, google.com, httpstat 200)
+- ✅ 1 working image
+- ❌ 3 broken links (404, broken domain, 500 error)
+- ❌ 2 broken image references
+- ❌ 1 broken video source
 
 **Expected Results:**
-- All broken URLs should be reported
-- HTTP error codes should be captured
-- Different failure types detected
+- 3 working links pass
+- 6+ broken links/images/media fail
+- HTTP error codes captured
+- Mix of failure types detected
 
 ---
 
 ### 2. QATEST-LEGACY - Legacy File Types
 **Triggers:** Content & File Types Check
 
-**Issues:**
-- Flash/SWF content (`.swf` files)
-- FLV video format
-- WMV video format
-- AVI video format
-- RealMedia (`.rm`) files
+**Content:**
+- ✅ 4 modern formats (MP4, PDF, PPTX, DOCX)
+- ❌ Flash/SWF content (2 instances)
+- ❌ FLV video format
+- ❌ WMV video format
+- ❌ AVI video format
+- ❌ RealMedia (`.rm`) file
 
 **Expected Results:**
-- All legacy formats flagged
+- 4 modern formats pass
+- 6 legacy formats fail
 - Flash objects detected
 - Legacy video formats reported
 
